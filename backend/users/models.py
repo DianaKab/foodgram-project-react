@@ -19,13 +19,17 @@ class User(AbstractUser):
     first_name = models.CharField(
         'Имя',
         max_length=150,
-        blank=True, null=True,
+        blank=False, null=False,
     )
     last_name = models.CharField(
         'Фамилия',
         max_length=150,
-        blank=True, null=True,
+        blank=False, null=False,
     )
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
         return self.username
@@ -44,4 +48,8 @@ class Subscribe(models.Model):
         related_name='subscibing',
         verbose_name='Пользователь, на которого подписываются'
     )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
 

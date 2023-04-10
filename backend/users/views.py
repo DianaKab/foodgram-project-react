@@ -1,20 +1,110 @@
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, permissions, status
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
-from .models import User
-from .serializers import CustomUserSerializer
+from rest_framework.response import Response
+from .models import User, Subscribe
+from .serializers import CustomUserSerializer, SubscribeSerializer
 
 
 class CustomUserViewSet(UserViewSet):
+    """Класс вьюсета пользователя"""
+
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
-    @action(methods=['get'], detail=False)
+    # @action(
+    #     methods=['get'],
+    #     detail=False
+    # )
+    # def me(self, request):
+    #     """Класс вьюсета пользователя"""
+    #
+    #     user = get_object_or_404(User, username=request.user)
+    #     serializer = self.get_serializer(user)
+    #     return Response(serializer.data)
+    #
+    # @action(
+    #     methods=['get'],
+    #     detail=False,
+    #     serializer_class=SubscribeSerializer
+    # )
+    # def subscriptions(self, request):
+    #     """Класс вьюсета подписок пользователя"""
+    #
+    #     subscribes = Subscribe.objects.filter(user=request.user)
+    #     serializer = self.get_serializer(subscribes, many=True)
+    #     return Response(serializer.data)
+    #
+    # @action(
+    #     methods=['post', 'delete'],
+    #     detail=True
+    # )
+    # def subscribe(self, request, pk):
+    #     """Класс вьюсета подписки/отписки пользователя"""
+    #     serializer_class = SubscribeSerializer
+    #     if request.method == 'POST':
+    #         following = get_object_or_404(User, pk=pk)
+    #         instance = Subscribe.objects.create(user=request.user, following=following)
+    #         serializer = serializer_class(instance)
+    #         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+    #     else:
+    #         if Subscribe.objects.filter(user=request.user, following__id=pk).exists():
+    #             Subscribe.objects.filter(
+    #                 user=request.user, following__id=pk
+    #             ).delete()
+    #             return Response(status=status.HTTP_204_NO_CONTENT)
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubscribeViewSet(viewsets.ModelViewSet):
+    """Класс вьюсета подписки пользователя"""
+
+    queryset = Subscribe.objects.all()
+    serializer_class = SubscribeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    # @action(
+    #     methods=['get'],
+    #     detail=False
+    # )
+    # def me(self, request):
+    #     """Класс вьюсета пользователя"""
+    #
+    #     user = get_object_or_404(User, username=request.user)
+    #     serializer = self.get_serializer(user)
+    #     return Response(serializer.data)
+
+    @action(
+        methods=['get'],
+        detail=False,
+        serializer_class=SubscribeSerializer
+    )
     def subscriptions(self, request):
-        pass
+        """Класс вьюсета подписок пользователя"""
 
-    @action(methods=['post', 'delete'], detail=True)
-    def subscribe(self, request, pk=None):
-        followings = Subscribe.objects.get(pk=pk)
-        return Response({'followings': followings.name})
+        subscribes = Subscribe.objects.filter(user=request.user)
+        serializer = self.get_serializer(subscribes, many=True)
+        return Response(serializer.data)
+
+    @action(
+        methods=['post', 'delete'],
+        detail=True
+    )
+    def subscribe(self, request, pk):
+        """Класс вьюсета подписки/отписки пользователя"""
+        serializer_class = SubscribeSerializer
+        if request.method == 'POST':
+            following = get_object_or_404(User, pk=pk)
+            instance = Subscribe.objects.create(user=request.user, following=following)
+            serializer = serializer_class(instance)
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            if Subscribe.objects.filter(user=request.user, following__id=pk).exists():
+                Subscribe.objects.filter(
+                    user=request.user, following__id=pk
+                ).delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 

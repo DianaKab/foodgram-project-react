@@ -11,6 +11,7 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'measurement_unit',)
     list_filter = ('name',)
+    search_fields = ('name',)
     empty_value_display = '-пусто-'
 
 
@@ -19,3 +20,5 @@ admin.site.register(Tag)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
+admin.site.register(IngredientRecipe)
+admin.site.register(TagRecipe)

@@ -4,27 +4,29 @@ from .models import User, Subscribe
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username',
-        default=serializers.CurrentUserDefault()
-    )
-    following = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all()
-    )
+    # user = serializers.SlugRelatedField(
+    #     read_only=True,
+    #     slug_field='username',
+    #     default=serializers.CurrentUserDefault()
+    # )
+    # following = serializers.SlugRelatedField(
+    #     slug_field='username',
+    #     queryset=User.objects.all()
+    # )
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'user', 'following',)
         model = Subscribe
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'first_name', 'last_name', 'is_subscribed')
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'is_subscribed')
 
     def create(self, validated_data):
         user = User(
@@ -38,4 +40,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
 
     def get_is_subscribed(self, obj):
-        pass
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        return Subscribe.objects.filter(
+            user=request.user, following=obj
+        ).exists()
