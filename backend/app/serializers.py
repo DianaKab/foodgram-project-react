@@ -2,6 +2,7 @@ import base64
 from django.core.files.base import ContentFile
 from app.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, IngredientRecipe, TagRecipe
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
 from rest_framework.relations import SlugRelatedField
 from users.serializers import CustomUserSerializer
@@ -46,6 +47,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
             )
         model = Favorite
 
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe')
+            )
+        ]
+
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
 
@@ -55,6 +63,13 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
             'user',
             )
         model = ShoppingCart
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=ShoppingCart.objects.all(),
+                fields=('user', 'recipe')
+            )
+        ]
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
@@ -88,6 +103,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'cooking_time',
                   )
         model = Recipe
+
 
     def create(self, validated_data):
         validated_data.pop('ingredients_recipes')
