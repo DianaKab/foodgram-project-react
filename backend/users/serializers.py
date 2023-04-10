@@ -4,15 +4,6 @@ from .models import User, Subscribe
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    # user = serializers.SlugRelatedField(
-    #     read_only=True,
-    #     slug_field='username',
-    #     default=serializers.CurrentUserDefault()
-    # )
-    # following = serializers.SlugRelatedField(
-    #     slug_field='username',
-    #     queryset=User.objects.all()
-    # )
 
     class Meta:
         fields = ('id', 'user', 'following',)

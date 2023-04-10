@@ -76,12 +76,12 @@ class IngredientRecipe(models.Model):
     amount = models.PositiveIntegerField(null=True)
 
     class Meta:
-        # constraints = [
-        #     models.UniqueConstraint(
-        #         fields=['user', 'shop_recipe'],
-        #         name='unique_user_shop_recipe'
-        #     )
-        # ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'shop_recipe'],
+                name='unique_user_shop_recipe'
+            )
+        ]
 
         default_related_name = 'ingredients_recipes'
         verbose_name = 'Подсчет ингредиентов'
@@ -118,12 +118,12 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        # constraints = [
-        #     models.UniqueConstraint(
-        #         fields=['user', 'recipe'],
-        #         name='unique_user_recipe'
-        #     )
-        # ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe'
+            )
+        ]
         default_related_name = 'favorites'
         verbose_name = 'Избранный'
         verbose_name_plural = 'Избранные'

@@ -1,5 +1,4 @@
 import base64
-
 from django.core.files.base import ContentFile
 from app.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, IngredientRecipe, TagRecipe
 from rest_framework import serializers
@@ -35,7 +34,6 @@ class Base64ImageField(serializers.ImageField):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
         return super().to_internal_value(data)
 
 
@@ -110,9 +108,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        print(instance)
-        print(validated_data)
-        print(self.initial_data)
         instance.tags.clear()
         IngredientRecipe.objects.filter(recipe=instance).delete()
         validated_data.pop('ingredients_recipes')
@@ -135,22 +130,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             )
             lst.append(current_ingredient)
         instance.ingredients.set(lst)
-        # if type(tags) == int:
-        #     current_tag, status = Tag.objects.get_or_create(
-        #         tag_id=tags,
-        #         # recipe=instance
-        #     )
-        #     lst2.append(current_tag)
-        #     instance.tags.set(lst2)
-        #     instance.save()
-        #     return instance
-        # for tag in tags:
-        #     current_tag, status = Tag.objects.get_or_create(
-        #         tag_id=tag,
-        #         recipe=instance
-        #     )
-        #     lst2.append(current_tag)
-        #     instance.tags.set(lst2)
         instance.save()
         return instance
 

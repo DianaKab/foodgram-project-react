@@ -26,7 +26,6 @@ def add_to(model, user, pk, serializer_class):
     recipe = get_object_or_404(Recipe, pk=pk)
     instance = model.objects.create(user=user, recipe=recipe)
     serializer = serializer_class(instance)
-    # serializer.is_valid(raise_exception=True)
     return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
