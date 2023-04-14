@@ -22,7 +22,6 @@ class Ingredient(models.Model):
     """Класс ингредиентов."""
 
     name = models.CharField(max_length=200)
-    amount = models.IntegerField(blank=True, null=True)
     measurement_unit = models.CharField(max_length=200)
 
     class Meta:
@@ -74,7 +73,11 @@ class IngredientRecipe(models.Model):
     """Класс связующая таблица ингредиентов и рецептов."""
     """Эта таблица, связующая для рецепта и ингредиентов, 
     в рецепте у меня связь ManyToManyField, это неявно создает еще одну таблицу. 
-     Так что я реализую это явно - доп таблицу (IngredientRecipe), где есть ссылка на рецепт и ингредиент.
+     Так что я реализую это явно - доп таблицу (IngredientRecipe),
+     где есть ссылка на рецепт и ингредиент. В моделе Recipe, даю ссылку на таблицу Ingredient,
+     через through='IngredientRecipe'. В IngredientRecipe появляется новый параметр amount, поэтому создаю эту 
+     доп таблицу явно.
+     Для тегов согласно не нужно доп таблицу, потому что там нет доп параметров.
      Чтобы при IngredientRecipe.objects.create(...) уже создаст нужную связь с рецептом.
      Если есть возможность на прямую связь с вами, можете дать ссылку на мессенджер или соц сеть, спасибо"""
 
