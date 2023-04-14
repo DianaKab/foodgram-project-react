@@ -46,11 +46,13 @@ class Recipe(models.Model):
     text = models.TextField()
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientRecipe', blank=False
+        through='IngredientRecipe',
+        blank=False,
     )
     tags = models.ManyToManyField(
         Tag,
-        through='TagRecipe', blank=False
+        blank=False,
+        db_constraint=False
     )
     cooking_time = models.IntegerField()
     pub_date = models.DateTimeField(
@@ -70,9 +72,20 @@ class Recipe(models.Model):
 
 class IngredientRecipe(models.Model):
     """Класс связующая таблица ингредиентов и рецептов."""
+    """Эта таблица, связующая для рецепта и ингредиентов, 
+    в рецепте у меня связь ManyToManyField, это неявно создает еще одну таблицу. 
+     Так что я реализую это явно - доп таблицу (IngredientRecipe), где есть ссылка на рецепт и ингредиент.
+     Чтобы при IngredientRecipe.objects.create(...) уже создаст нужную связь с рецептом.
+     Если есть возможность на прямую связь с вами, можете дать ссылку на мессенджер или соц сеть, спасибо"""
 
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE
+    )
     amount = models.PositiveIntegerField(null=True)
 
     class Meta:
@@ -81,21 +94,7 @@ class IngredientRecipe(models.Model):
         verbose_name_plural = 'Подсчеты ингредиентов'
 
     def __str__(self):
-        return f'{self.ingredient} {self.recipe}'
-
-
-class TagRecipe(models.Model):
-    """Класс связующая таблица тегов и рецептов."""
-
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Тег рецепта'
-        verbose_name_plural = 'Теги рецептов'
-
-    def __str__(self):
-        return f'{self.tag} {self.recipe}'
+        return f'{self.ingredient} {self.amount}'
 
 
 class Favorite(models.Model):

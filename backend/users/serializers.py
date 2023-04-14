@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from djoser.serializers import UserSerializer
+# from app.serializers import RecipeSubscribeSerializer
 from .models import User, Subscribe
 
 
@@ -8,6 +10,19 @@ class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'user', 'following',)
         model = Subscribe
+
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Subscribe.objects.all(),
+                fields=['user', 'following'],
+                message='Ты уже подписан!'
+            )
+        ]
+
+    def validate_following(self, value):
+        if value == self.context['request'].user:
+            raise serializers.ValidationError("Нельзя подписаться на себя!")
+        return value
 
 
 class CustomUserSerializer(UserSerializer):
