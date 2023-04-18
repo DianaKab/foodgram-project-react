@@ -29,10 +29,12 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'is_subscribed')
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes', 'recipes_count')
 
     def create(self, validated_data):
         user = User(
@@ -52,3 +54,9 @@ class CustomUserSerializer(UserSerializer):
         return Subscribe.objects.filter(
             user=request.user, following=obj
         ).exists()
+
+    def get_recipes(self):
+        pass
+
+    def get_recipes_count(self):
+        pass

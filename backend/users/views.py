@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import User, Subscribe
 from .serializers import CustomUserSerializer, SubscribeSerializer
+from app.serializers import RecipeInSubscribtionSerializer
 
 
 class CustomUserViewSet(UserViewSet):

@@ -6,6 +6,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'author',)
     list_filter = ('author', 'name', 'tags',)
     empty_value_display = '-пусто-'
+    filter_horizontal = ('tags', 'ingredients',)
 
 
 class IngredientAdmin(admin.ModelAdmin):

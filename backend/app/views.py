@@ -15,7 +15,8 @@ from .mixins import ListRetrieveViewSet
 from .serializers import \
     TagSerializer, \
     IngredientSerializer, \
-    RecipeSerializer, \
+    RecipeCreateUpdateSerializer, \
+    RecipeListSerializer, \
     FavoriteSerializer, \
     ShoppingCartSerializer
 
@@ -60,7 +61,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Класс вьюсета рецептов"""
 
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    serializer_class = RecipeCreateUpdateSerializer
     pagination_class = PageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('tags', )
@@ -76,6 +77,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            return RecipeCreateUpdateSerializer
+
+        return RecipeListSerializer
 
     @action(
         methods=['post', 'delete'],

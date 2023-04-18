@@ -32,6 +32,26 @@ class Ingredient(models.Model):
         return self.name
 
 
+class IngredientRecipe(models.Model):
+    """Класс связующая таблица ингредиентов и рецептов."""
+
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE
+    )
+    amount = models.PositiveIntegerField(
+        null=False
+    )
+
+    class Meta:
+        default_related_name = 'ingredients_recipes'
+        verbose_name = 'Подсчет ингредиентов'
+        verbose_name_plural = 'Подсчеты ингредиентов'
+
+    def __str__(self):
+        return f'{self.ingredient} {self.amount}'
+
+
 class Recipe(models.Model):
     """Класс рецептов."""
 
@@ -44,9 +64,8 @@ class Recipe(models.Model):
         upload_to='recipes/', null=False, blank=False)
     text = models.TextField()
     ingredients = models.ManyToManyField(
-        Ingredient,
-        through='IngredientRecipe',
-        blank=False,
+        IngredientRecipe,
+        blank=False
     )
     tags = models.ManyToManyField(
         Tag,
@@ -67,37 +86,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class IngredientRecipe(models.Model):
-    """Класс связующая таблица ингредиентов и рецептов."""
-    """Эта таблица, связующая для рецепта и ингредиентов, 
-    в рецепте у меня связь ManyToManyField, это неявно создает еще одну таблицу. 
-     Так что я реализую это явно - доп таблицу (IngredientRecipe),
-     где есть ссылка на рецепт и ингредиент. В моделе Recipe, даю ссылку на таблицу Ingredient,
-     через through='IngredientRecipe'. В IngredientRecipe появляется новый параметр amount, поэтому создаю эту 
-     доп таблицу явно.
-     Для тегов согласно не нужно доп таблицу, потому что там нет доп параметров.
-     Чтобы при IngredientRecipe.objects.create(...) уже создаст нужную связь с рецептом.
-     Если есть возможность на прямую связь с вами, можете дать ссылку на мессенджер или соц сеть, спасибо"""
-
-    ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE
-    )
-    amount = models.PositiveIntegerField(null=True)
-
-    class Meta:
-        default_related_name = 'ingredients_recipes'
-        verbose_name = 'Подсчет ингредиентов'
-        verbose_name_plural = 'Подсчеты ингредиентов'
-
-    def __str__(self):
-        return f'{self.ingredient} {self.amount}'
 
 
 class Favorite(models.Model):
