@@ -1,8 +1,9 @@
+from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from djoser.serializers import UserSerializer
+
 # from app.serializers import RecipeSubscribeSerializer
-from .models import User, Subscribe
+from .models import Subscribe, User
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -29,12 +30,10 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'is_subscribed')
 
     def create(self, validated_data):
         user = User(
@@ -54,9 +53,3 @@ class CustomUserSerializer(UserSerializer):
         return Subscribe.objects.filter(
             user=request.user, following=obj
         ).exists()
-
-    def get_recipes(self):
-        pass
-
-    def get_recipes_count(self):
-        pass

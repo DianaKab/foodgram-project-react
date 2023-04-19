@@ -9,3 +9,5 @@ pathlib==1.0.1
 sorl-thumbnail==12.9.0
 reportlab==3.6.12
 django-filter==23.1
+flake8==6.0.0
+isort==5.12.0

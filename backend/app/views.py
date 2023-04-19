@@ -1,24 +1,22 @@
 import io
-from django.http import HttpResponse
+
 from django.db.models import Sum
-from reportlab.pdfgen import canvas
-from rest_framework import viewsets, permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
+from reportlab.pdfgen import canvas
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from .models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, IngredientRecipe
-from .permissions import *
+from rest_framework.response import Response
+
 from .mixins import ListRetrieveViewSet
-from .serializers import \
-    TagSerializer, \
-    IngredientSerializer, \
-    RecipeCreateUpdateSerializer, \
-    RecipeListSerializer, \
-    FavoriteSerializer, \
-    ShoppingCartSerializer
+from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingCart, Tag)
+from .permissions import *
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeCreateUpdateSerializer, RecipeListSerializer,
+                          ShoppingCartSerializer, TagSerializer)
 
 
 def add_to(model, user, pk, serializer_class):
@@ -90,7 +88,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_path='favorite',
         filter_backends=(DjangoFilterBackend,),
         filterset_fields=('tags',),
-        permission_classes=(IsAuthor,)
+        permission_classes=(IsAuthor,),
+        serializer_class=RecipeListSerializer
     )
     def get_favorite(self, request, pk):
         """Создание/удаление избранных рецептов пользователя"""
@@ -124,7 +123,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).values_list(
             'ingredient__name', 'ingredient__measurement_unit'
         ).annotate(Sum('amount')))
-        print(ingredients)
         file_data = []
         for ingredient in ingredients:
             file_data.append(f'{ingredient[0]} ({ingredient[1]}) - {ingredient[2]}\n')
