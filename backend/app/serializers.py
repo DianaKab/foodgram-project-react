@@ -59,11 +59,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
     name = serializers.StringRelatedField(
         source='recipe.name'
     )
-    image = serializers.HyperlinkedRelatedField(
-        view_name='image-detail',
+    image = serializers.FileField(
         source='recipe.image',
-        many=False,
-        read_only=True
     )
     cooking_time = serializers.IntegerField(
         source='recipe.cooking_time',
@@ -96,11 +93,8 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     name = serializers.StringRelatedField(
         source='recipe.name'
     )
-    image = serializers.HyperlinkedRelatedField(
-        view_name='image-detail',
+    image = serializers.FileField(
         source='recipe.image',
-        many=False,
-        read_only=True
     )
     cooking_time = serializers.IntegerField(
         source='recipe.cooking_time',
@@ -162,6 +156,17 @@ class IngredientCreateInRecipeSerializer(serializers.ModelSerializer):
             'amount'
             )
         model = IngredientRecipe
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('id',
+                  'image',
+                  'name',
+                  'cooking_time',
+                  )
+        model = Recipe
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
