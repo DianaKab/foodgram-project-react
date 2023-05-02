@@ -3,7 +3,7 @@ services:
 
   frontend:
     image: dianakab/foodgram_frontend:v1.0
-    volumes:
+    volumes:z
       - ../frontend/:/app/result_build/
 
   db:
