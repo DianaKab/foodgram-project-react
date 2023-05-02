@@ -1,9 +1,9 @@
 version: '3.3'
-services:
 
+services:
   frontend:
     image: dianakab/foodgram_frontend:v1.0
-    volumes:z
+    volumes:
       - ../frontend/:/app/result_build/
 
   db:
