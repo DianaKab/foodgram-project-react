@@ -1,6 +1,5 @@
 version: '3.3'
 
-
 services:
   frontend:
     image: dianakab/foodgram_frontend:v1.0
@@ -11,6 +10,18 @@ services:
     image: postgres:13.0-alpine
     volumes:
       - postgres:/var/lib/postgres/data/
+    env_file:
+      - ./.env
+
+  backend:
+    image: dianakab/foodgram_backend:v1.0
+    restart: always
+    volumes:
+      -  static_value:/app/back_static/
+      -  media_value:/app/back_media/
+      -  docs:/app/api/docs/
+    depends_on:
+      - db
     env_file:
       - ./.env
 
@@ -26,18 +37,6 @@ services:
       - media_value:/var/html/back_media/
     depends_on:
       - backend
-
-  backend:
-    image: dianakab/foodgram_backend:v1.0
-    restart: always
-    volumes:
-      -  static_value:/app/back_static/
-      -  media_value:/app/back_media/
-      -  docs:/app/api/docs/
-    depends_on:
-      - db
-    env_file:
-      - ./.env
 
 volumes:
   static_value:
