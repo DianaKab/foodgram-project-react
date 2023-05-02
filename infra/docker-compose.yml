@@ -1,5 +1,6 @@
 version: '3.3'
 
+
 services:
   frontend:
     image: dianakab/foodgram_frontend:v1.0
