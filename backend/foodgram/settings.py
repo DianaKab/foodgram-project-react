@@ -160,10 +160,5 @@ MEDIA_URL = '/back_media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'back_media')
 
 DJOSER = {
-    'HIDE_USERS': False,
     "LOGIN_FIELD": "email",
-    'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
-        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly']
-    },
 }
