@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from ...models import Ingredient
 
 # dir_path = pathlib.Path('c:/', 'Dev', 'foodgram-project-react')
-path = Path('app', 'backend', 'data', 'ingredients.csv')
+path = Path('/app', 'data', 'ingredients.csv')
 
 
 class Command(BaseCommand):
