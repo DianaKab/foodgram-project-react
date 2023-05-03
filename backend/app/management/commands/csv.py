@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from ..models import Ingredient
+from ...models import Ingredient
 
 # dir_path = pathlib.Path('c:/', 'Dev', 'foodgram-project-react')
 path = Path('/app', 'data', 'ingredients.csv')
