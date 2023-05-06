@@ -170,6 +170,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'back_media')
 
 DJOSER = {
     "LOGIN_FIELD": "email",
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly']
+    },
     "SERIALIZERS": {
         "user_create": "users.serializers.UsersCreateSerializer",
         "user": "users.serializers.CustomUserSerializer",
