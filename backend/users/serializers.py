@@ -1,4 +1,4 @@
-from djoser.serializers import UserSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -25,6 +25,32 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return value
 
 
+class UsersCreateSerializer(UserCreateSerializer):
+    """Сериализатор для обработки запросов на создание пользователя.
+    Валидирует создание пользователя с юзернеймом 'me'."""
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'password')
+
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def validate_username(self, value):
+        if value == "me":
+            raise ValidationError(
+                'Невозможно создать пользователя с таким именем!'
+            )
+        return value
+
+    def validate_email(self, value):
+        return value.lower()
+
+
 class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
     first_name = serializers.CharField(required=True)
@@ -38,8 +64,8 @@ class CustomUserSerializer(UserSerializer):
         user = User(
             email=validated_data['email'],
             username=validated_data['username'],
-            first_name=validated_data['username'],
-            last_name=validated_data['username']
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
         )
         user.set_password(validated_data['password'])
         user.save()
