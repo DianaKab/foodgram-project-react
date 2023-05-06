@@ -167,7 +167,6 @@ SIMPLE_JWT = {
 MEDIA_URL = '/back_media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'back_media')
 
-
 DJOSER = {
     "LOGIN_FIELD": "email",
     'PERMISSIONS': {
