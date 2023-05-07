@@ -140,7 +140,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_URL = '/back_static/'
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'back_static')
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
 
 # Default primary key field type
@@ -158,6 +157,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
 }
+
 AUTH_USER_MODEL = 'users.User'
 SIMPLE_JWT = {
    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),

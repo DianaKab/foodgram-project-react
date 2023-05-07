@@ -8,9 +8,10 @@ from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
+from users.models import User
 
 from .mixins import ListRetrieveViewSet
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
@@ -19,7 +20,6 @@ from .permissions import *
 from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeCreateUpdateSerializer, RecipeListSerializer,
                           ShoppingCartSerializer, TagSerializer)
-from users.models import User
 
 
 def add_to(model, user, pk, serializer_class):
@@ -100,20 +100,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer_class = FavoriteSerializer
             return add_to(Favorite, request.user, pk, serializer_class)
         return delete_from(Favorite, request.user, pk)
-
-    # @action(
-    #     detail=False,
-    #     serializer_class=ShoppingCartSerializer,
-    #     permission_classes=(IsAuthor,)
-    # )
-    # def cart(self, request):
-    #     """Страница списка покупок пользователя"""
-    #
-    #     user = get_object_or_404(User, username=self.request.user)
-    #     shopping_cart = ShoppingCart.objects.filter(user=user).select_related('recipe')
-    #
-    #     serializer = self.get_serializer(shopping_cart, many=True)
-    #     return Response(serializer.data)
 
     @action(
         detail=False,

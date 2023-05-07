@@ -221,7 +221,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     ingredients = IngredientCreateInRecipeSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
-    tags = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    # tags = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
