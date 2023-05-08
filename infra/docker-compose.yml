@@ -17,9 +17,9 @@ services:
     image: dianakab/foodgram_backend:v1.0
     restart: always
     volumes:
-      -  static_value:/app/back_static/
-      -  media_value:/app/back_media/
-      -  docs:/app/docs/
+      - static_value:/app/back_static/
+      - media_value:/app/back_media/
+      - docs:/app/docs/
     depends_on:
       - db
     env_file:
