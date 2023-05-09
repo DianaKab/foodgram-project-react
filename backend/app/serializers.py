@@ -173,7 +173,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     """Получение списка рецептов/рецепта."""
 
     author = CustomUserSerializer(read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
+    tags = serializers.SerializerMethodField()
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -183,6 +183,12 @@ class RecipeListSerializer(serializers.ModelSerializer):
         """Возвращает отдельный сериализатор."""
         return IngredientRecipeSerializer(
             IngredientRecipe.objects.filter(recipe__id=obj.id).all(), many=True
+        ).data
+
+    def get_tags(self, obj):
+        """Возвращает отдельный сериализатор."""
+        return TagSerializer(
+            Tag.objects.filter(recipe__id=obj.id).all(), many=True
         ).data
 
     def get_is_favorited(self, obj):
@@ -243,6 +249,11 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     def validate_ingredients(self, value):
         if len(value) < 1:
             raise serializers.ValidationError("Добавьте хотя бы один ингредиент.")
+        return value
+
+    def validate_tags(self, value):
+        if len(value) < 1:
+            raise serializers.ValidationError("Добавьте хотя бы один тег.")
         return value
 
     def create(self, validated_data):
