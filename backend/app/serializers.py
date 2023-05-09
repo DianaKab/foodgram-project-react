@@ -173,7 +173,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     """Получение списка рецептов/рецепта."""
 
     author = CustomUserSerializer(read_only=True)
-    tags = serializers.SerializerMethodField()
+    tags = TagSerializer()
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -183,12 +183,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
         """Возвращает отдельный сериализатор."""
         return IngredientRecipeSerializer(
             IngredientRecipe.objects.filter(recipe__id=obj.id).all(), many=True
-        ).data
-
-    def get_tags(self, obj):
-        """Возвращает отдельный сериализатор."""
-        return TagSerializer(
-            Tag.objects.filter(recipe__id=obj.id).all(), many=True
         ).data
 
     def get_is_favorited(self, obj):
@@ -227,7 +221,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     ingredients = IngredientCreateInRecipeSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
-    # tags = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    tags = TagSerializer()
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -270,12 +264,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         super().update(instance, validated_data)
         instance.save()
         return instance
-
-    def get_tags(self, obj) :
-        """Возвращает отдельный сериализатор."""
-        return TagSerializer(
-            Tag.objects.filter(recipe__id=obj.id).all(), many=True
-        ).data
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
