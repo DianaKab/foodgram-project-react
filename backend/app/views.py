@@ -47,6 +47,7 @@ class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (permissions.IsAdminUser,)
+    pagination_class = None
 
 
 class IngredientViewSet(ListRetrieveViewSet):
@@ -55,6 +56,7 @@ class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (permissions.IsAdminUser,)
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -62,7 +64,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateUpdateSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = None
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('tags', )
     permission_classes = (IsAuthorOrReadOnly,)
