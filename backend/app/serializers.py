@@ -25,6 +25,7 @@ def add_ingredient(ingredients, obj):
 
 class TagSerializer(serializers.ModelSerializer):
     """Получение тегов."""
+    pagination_class = None
 
     class Meta:
         fields = ('id', 'name', 'color', 'slug')
