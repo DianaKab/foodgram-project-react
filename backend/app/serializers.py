@@ -173,7 +173,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     """Получение списка рецептов/рецепта."""
 
     author = CustomUserSerializer(read_only=True)
-    tags = TagSerializer()
+    tags = TagSerializer(many=True, read_only=True)
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -221,7 +221,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     ingredients = IngredientCreateInRecipeSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
-    tags = TagSerializer()
+    tags = TagSerializer(many=True, read_only=True)
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
