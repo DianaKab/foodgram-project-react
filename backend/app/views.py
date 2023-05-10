@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from users.models import User
 
+from .filters import IngredientFilter, RecipeFilter
 from .mixins import ListRetrieveViewSet
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Tag)
@@ -57,6 +58,7 @@ class IngredientViewSet(ListRetrieveViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filterset_class = IngredientFilter
     permission_classes = (AllowAny,)
     pagination_class = None
 
@@ -67,7 +69,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateUpdateSerializer
     pagination_class = LimitPagination
-    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
     filterset_fields = ('tags', )
     permission_classes = (IsAuthorOrReadOnly,)
 
