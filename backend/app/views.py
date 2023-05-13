@@ -70,7 +70,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeCreateUpdateSerializer
     pagination_class = LimitPagination
     filterset_class = RecipeFilter
-    filterset_fields = ('tags', )
     permission_classes = (IsAuthorOrReadOnly,)
 
     def get_permissions(self):
