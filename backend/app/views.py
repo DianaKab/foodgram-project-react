@@ -93,8 +93,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['post', 'delete'],
         detail=True,
         url_path='favorite',
-        filter_backends=(DjangoFilterBackend,),
-        filterset_fields=('tags',),
         permission_classes=(IsAuthor,),
         serializer_class=RecipeListSerializer
     )
