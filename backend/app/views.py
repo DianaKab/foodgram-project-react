@@ -93,8 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['post', 'delete'],
         detail=True,
         url_path='favorite',
-        permission_classes=(IsAuthor,),
-        serializer_class=RecipeListSerializer
+        permission_classes=(IsAuthor,)
     )
     def get_favorite(self, request, pk):
         """Создание/удаление избранных рецептов пользователя"""
@@ -106,7 +105,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        permission_classes=(IsAuthor,)
+        methods=["GET"],
+        pagination_class=None,
+        permission_classes=[IsAuthorOrReadOnly]
     )
     def download_shopping_cart(self, request):
         """Скачивания списка покупок пользователя"""
