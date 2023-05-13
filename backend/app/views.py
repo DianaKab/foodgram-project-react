@@ -83,12 +83,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_serializer_class(self):
-        if self.action in ('create', 'update', 'partial_update'):
-            return RecipeCreateUpdateSerializer
-
-        return RecipeListSerializer
-
     @action(
         methods=['post', 'delete'],
         detail=True,
