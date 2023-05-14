@@ -58,6 +58,7 @@ class IngredientViewSet(ListRetrieveViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
     permission_classes = (AllowAny,)
     pagination_class = None
@@ -69,33 +70,54 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateUpdateSerializer
     pagination_class = LimitPagination
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     permission_classes = (IsAuthorOrReadOnly,)
 
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
+    def action_post_delete(self, pk, serializer_class):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        object = serializer_class.Meta.model.objects.filter(
+            user=user, recipe=recipe
+        )
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        if self.request.method == 'POST':
+            serializer = serializer_class(
+                data={'user': user.id, 'recipe': pk},
+                context={'request': self.request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_update(self, serializer):
-        serializer.save(author=self.request.user)
+        if self.request.method == 'DELETE':
+            if object.exists():
+                object.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'error': 'Этого рецепта нет в списке'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    # def perform_create(self, serializer):
+    #     serializer.save(author=self.request.user)
+    #
+    # def perform_update(self, serializer):
+    #     serializer.save(author=self.request.user)
 
     @action(
         methods=['post', 'delete'],
         detail=True,
-        url_path='favorite',
-        permission_classes=(IsAuthor,)
+        url_path='favorite'
     )
     def get_favorite(self, request, pk):
         """Создание/удаление избранных рецептов пользователя"""
+        return self.action_post_delete(pk, FavoriteSerializer)
 
-        if request.method == 'POST':
-            serializer_class = FavoriteSerializer
-            return add_to(Favorite, request.user, pk, serializer_class)
-        return delete_from(Favorite, request.user, pk)
+    @action(
+        methods=['POST', 'DELETE'],
+        detail=True
+    )
+    def shopping_cart(self, request, pk) :
+        return self.action_post_delete(pk, ShoppingCartSerializer)
 
     @action(
         detail=False,
@@ -117,17 +139,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(file_data, content_type='application/text charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename="shopping_car.txt"'
         return response
-
-    @action(
-        methods=['post', 'delete'],
-        detail=True,
-        url_path='shopping_cart',
-        permission_classes=(IsAuthor,)
-    )
-    def get_shopping_cart(self, request, pk):
-        """Создание/удаление списка покупок пользователя"""
-
-        if request.method == 'POST':
-            serializer_class = ShoppingCartSerializer
-            return add_to(ShoppingCart, request.user, pk, serializer_class)
-        return delete_from(ShoppingCart, request.user, pk)
