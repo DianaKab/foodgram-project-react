@@ -97,11 +97,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Этого рецепта нет в списке'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-    # def perform_create(self, serializer):
-    #     serializer.save(author=self.request.user)
-    #
-    # def perform_update(self, serializer):
-    #     serializer.save(author=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
 
     @action(
         methods=['post', 'delete'],
