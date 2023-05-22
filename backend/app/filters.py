@@ -26,7 +26,7 @@ class IngredientFilter(FilterSet):
 
 class RecipeFilter(FilterSet):
     """Фильтр рецептов по автору/тегу/подписке/наличию в списке покупок"""
-    tags = filters.AllValuesMultipleFilter(field_name='tags__slug', lookup_expr='in')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug', lookup_expr='iexact')
     is_favorited = BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = BooleanFilter(
         method='filter_is_in_shopping_cart')
@@ -37,10 +37,10 @@ class RecipeFilter(FilterSet):
 
     def filter_is_favorited(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(favorite__user=self.request.user) 
+            return queryset.filter(favorites__user=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(shopping_cart__user=self.request.user)
+            return queryset.filter(cart__user=self.request.user)
         return queryset
