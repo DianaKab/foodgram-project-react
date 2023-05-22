@@ -74,29 +74,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
     permission_classes = (IsAuthorOrReadOnly,)
 
-    def action_post_delete(self, pk, serializer_class):
-        user = self.request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        object = serializer_class.Meta.model.objects.filter(
-            user=user, recipe=recipe
-        )
-
-        if self.request.method == 'POST':
-            serializer = serializer_class(
-                data={'user': user.id, 'recipe': pk},
-                context={'request': self.request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        if self.request.method == 'DELETE':
-            if object.exists():
-                object.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'error': 'Этого рецепта нет в списке'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -106,36 +83,46 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         methods=['post', 'delete'],
         detail=True,
-        url_path='favorite'
+        serializer_class=FavoriteSerializer
     )
-    def get_favorite(self, request, pk):
+    def favorite(self, request, pk):
         """Создание/удаление избранных рецептов пользователя"""
-        return self.action_post_delete(pk, FavoriteSerializer)
 
-    @action(
-        methods=['POST', 'DELETE'],
-        detail=True
-    )
-    def shopping_cart(self, request, pk) :
-        return self.action_post_delete(pk, ShoppingCartSerializer)
+        if request.method == 'POST':
+            serializer_class = FavoriteSerializer
+            return add_to(Favorite, request.user, pk, serializer_class)
+        return delete_from(Favorite, request.user, pk)
 
     @action(
         detail=False,
-        methods=["GET"],
-        pagination_class=None,
-        permission_classes=[IsAuthorOrReadOnly]
+        permission_classes=(IsAuthor,)
     )
-    def download_shopping_cart(self, request):
+    def download_shopping_cart(self, request) :
         """Скачивания списка покупок пользователя"""
-
         ingredients = list(IngredientRecipe.objects.filter(
             recipe__carts__user=request.user
         ).values_list(
             'ingredient__name', 'ingredient__measurement_unit'
         ).annotate(Sum('amount')))
         file_data = []
-        for ingredient in ingredients:
+
+        for ingredient in ingredients :
             file_data.append(f'{ingredient[0]} ({ingredient[1]}) - {ingredient[2]}\n')
         response = HttpResponse(file_data, content_type='application/text charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename="shopping_car.txt"'
+
         return response
+
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=(IsAuthor,),
+        serializer_class=ShoppingCartSerializer
+    )
+    def shopping_cart(self, request, pk) :
+        """Создание/удаление списка покупок пользователя"""
+
+        if request.method == 'POST':
+            serializer_class = ShoppingCartSerializer
+            return add_to(ShoppingCart, request.user, pk, serializer_class)
+        return delete_from(ShoppingCart, request.user, pk)
