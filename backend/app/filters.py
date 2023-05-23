@@ -1,7 +1,7 @@
 from django.db.models import BooleanField, ExpressionWrapper, Q
 from django_filters.rest_framework import FilterSet, filters, BooleanFilter
 
-from .models import Ingredient, Recipe
+from .models import Ingredient, Recipe, Tag
 
 
 class IngredientFilter(FilterSet):
@@ -26,7 +26,7 @@ class IngredientFilter(FilterSet):
 
 class RecipeFilter(FilterSet):
     """Фильтр рецептов по автору/тегу/подписке/наличию в списке покупок"""
-    tags = filters.AllValuesMultipleFilter(field_name='tags__slug', lookup_expr='iexact')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug', to_field_name="slug", queryset=Tag.objects.all())
     is_favorited = BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = BooleanFilter(
         method='filter_is_in_shopping_cart')
