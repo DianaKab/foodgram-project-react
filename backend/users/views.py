@@ -38,21 +38,22 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         methods=['post', 'delete'],
-        detail=True
+        detail=True,
+        serializer_class=SubscribeSerializer
     )
-    def subscribe(self, request, pk) :
+    def subscribe(self, request, id):
         """Класс вьюсета подписки/отписки пользователя"""
 
         serializer_class = SubscribeSerializer
-        if request.method == 'POST' :
-            following = get_object_or_404(User, pk=pk)
+        if request.method == 'POST':
+            following = get_object_or_404(User, id=id)
             instance = Subscribe.objects.create(user=request.user, following=following)
             serializer = serializer_class(instance)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         else :
-            if Subscribe.objects.filter(user=request.user, following__id=pk).exists() :
+            if Subscribe.objects.filter(user=request.user, following__id=id).exists() :
                 Subscribe.objects.filter(
-                    user=request.user, following__id=pk
+                    user=request.user, following__id=id
                 ).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(status=status.HTTP_400_BAD_REQUEST)
