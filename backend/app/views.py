@@ -95,7 +95,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        permission_classes=(IsAuthor,)
+        permission_classes=(IsAuthor,),
+        pagination_class=None,
     )
     def download_shopping_cart(self, request) :
         """Скачивания списка покупок пользователя"""
