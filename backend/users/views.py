@@ -19,18 +19,13 @@ class CustomUserViewSet(UserViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = PageNumberPagination
 
-    @action(
-        methods=['get'],
-        detail=False,
-        serializer_class=SubscribeSerializer,
-        permission_classes=(IsAuthor,),
-        pagination_class=PageNumberPagination
-    )
+    @action(detail=False,
+            permission_classes=[IsAuthenticated]
+            )
     def subscriptions(self, request) :
-        """Класс вьюсета подписок пользователя"""
-
-        subscribes = Subscribe.objects.filter(user=request.user)
-        page = self.paginate_queryset(subscribes)
+        user = request.user
+        follows = User.objects.filter(following__user=user)
+        page = self.paginate_queryset(follows)
         serializer = SubscribeSerializer(
             page, many=True,
             context={'request' : request})
