@@ -26,7 +26,7 @@ class CustomUserViewSet(UserViewSet):
             )
     def subscriptions(self, request) :
         user = request.user
-        follows = User.objects.filter(following__user=user)
+        follows = Subscribe.objects.filter(following__user=user)
         page = self.paginate_queryset(follows)
         serializer = SubscribeSerializer(
             page, many=True,
@@ -47,7 +47,7 @@ class CustomUserViewSet(UserViewSet):
             instance = Subscribe.objects.create(user=request.user, following=following)
             serializer = serializer_class(instance)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-        else :
+        else:
             if Subscribe.objects.filter(user=request.user, following__id=id).exists() :
                 Subscribe.objects.filter(
                     user=request.user, following__id=id
