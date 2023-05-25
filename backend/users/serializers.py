@@ -2,7 +2,6 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-
 from .models import Subscribe, User
 
 
@@ -63,7 +62,6 @@ class CustomUserSerializer(UserSerializer):
 
     def create(self, validated_data):
         user = User(
-            email=validated_data['email'],
             username=validated_data['username'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name']
