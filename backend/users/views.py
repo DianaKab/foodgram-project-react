@@ -10,7 +10,7 @@ from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 
 from .models import Subscribe, User
-from .serializers import CustomUserSerializer, SubscribeSerializer
+from .serializers import CustomUserSerializer, SubscribeSerializer, FollowSerializer
 
 
 class CustomUserViewSet(UserViewSet):
@@ -24,11 +24,11 @@ class CustomUserViewSet(UserViewSet):
     @action(detail=False,
             permission_classes=[IsAuthenticated]
             )
-    def subscriptions(self, request) :
+    def subscriptions (self, request) :
         user = request.user
         follows = Subscribe.objects.filter(user=user)
         page = self.paginate_queryset(follows)
-        serializer = SubscribeSerializer(
+        serializer = FollowSerializer(
             page, many=True,
             context={'request' : request})
         return self.get_paginated_response(serializer.data)
