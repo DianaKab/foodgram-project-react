@@ -20,7 +20,7 @@ from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Tag)
 from .permissions import *
 from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeCreateUpdateSerializer, RecipeListSerializer,
+                          RecipeCreateUpdateSerializer,
                           ShoppingCartSerializer, TagSerializer)
 from .paginations import LimitPagination
 

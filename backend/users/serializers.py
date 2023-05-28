@@ -6,6 +6,26 @@ from rest_framework.validators import UniqueTogetherValidator
 from .models import Subscribe, User
 
 
+class SubscribeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('id', 'user', 'following',)
+        model = Subscribe
+
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Subscribe.objects.all(),
+                fields=['user', 'following'],
+                message='Ты уже подписан!'
+            )
+        ]
+
+    def validate_following(self, value):
+        if value == self.context['request'].user:
+            raise serializers.ValidationError("Нельзя подписаться на себя!")
+        return value
+
+
 class UsersCreateSerializer(UserCreateSerializer):
     """Сериализатор для обработки запросов на создание пользователя.
     Валидирует создание пользователя с юзернеймом 'me'."""
