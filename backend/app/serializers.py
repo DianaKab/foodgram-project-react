@@ -169,59 +169,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
 
 
-class RecipeListSerializer(serializers.ModelSerializer):
-    """Получение списка рецептов/рецепта."""
-
-    author = CustomUserSerializer(read_only=True)
-    tags = serializers.SerializerMethodField()
-    image = Base64ImageField()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
-    ingredients = serializers.SerializerMethodField()
-
-    def get_ingredients(self, obj):
-        """Возвращает отдельный сериализатор."""
-        return IngredientRecipeSerializer(
-            IngredientRecipe.objects.filter(recipe__id=obj.id).all(), many=True
-        ).data
-
-    def get_tags(self, obj):
-        """Возвращает отдельный сериализатор."""
-        return TagSerializer(
-            Tag.objects.filter(recipe__id=obj.id).all(), many=True
-        ).data
-
-    def get_is_favorited(self, obj):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return Favorite.objects.filter(
-            user=request.user, recipe=obj
-        ).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return ShoppingCart.objects.filter(
-            user=request.user, recipe=obj
-        ).exists()
-
-    class Meta:
-        fields = ('id',
-                  'author',
-                  'ingredients',
-                  'is_favorited',
-                  'is_in_shopping_cart',
-                  'tags',
-                  'image',
-                  'name',
-                  'text',
-                  'cooking_time',
-                  )
-        model = Recipe
-
-
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     """Создание/изменение рецепта."""
 
@@ -292,23 +239,34 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             user=request.user, recipe=obj
         ).exists()
 
-    def to_representation(self, obj):
-        """Возвращаем прдеставление в таком же виде, как и GET-запрос."""
-        self.fields.pop('ingredients')
-        representation = super().to_representation(obj)
-        representation['ingredients'] = IngredientRecipeSerializer(
-            IngredientRecipe.objects.filter(recipe__id=obj.id).all(), many=True
-        ).data
-        return representation
+    def to_representation(self, instance):
+        context = {'request': self.context.get('request')}
+        return GetRecipeSerializer(instance, context=context).data
 
 
-class RecipeInSubscribtionSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+class GetRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для отображения полной информации о рецепте."""
+    tags = TagSerializer(many=True)
+    author = CustomUserSerializer(read_only=True)
+    ingredients = IngredientRecipeSerializer(read_only=True, many=True,
+                                             source='recipe_ingredient')
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        fields = ('id',
-                  'image',
-                  'name',
-                  'cooking_time',
-                  )
         model = Recipe
+        fields = ('id', 'tags', 'author', 'ingredients',
+                  'is_favorited', 'is_in_shopping_cart',
+                  'name', 'image', 'text', 'cooking_time')
+
+    def get_is_favorited(self, object):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return object.favorite.filter(user=user).exists()
+
+    def get_is_in_shopping_cart(self, object):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return object.shopping_cart.filter(user=user).exists()
