@@ -107,7 +107,7 @@ class Favorite(models.Model):
                 name='unique_user_recipe'
             )
         ]
-        default_related_name = 'favorites'
+        default_related_name = 'favorite'
         verbose_name = 'Избранный'
         verbose_name_plural = 'Избранные'
 
