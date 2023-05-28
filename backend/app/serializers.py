@@ -1,5 +1,7 @@
 import base64
 
+from django.db import transaction
+
 from app.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                         ShoppingCart, Tag)
 from django.core.files.base import ContentFile
@@ -203,6 +205,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Добавьте хотя бы один тег.")
         return value
 
+    @transaction.atomic
     def create(self, validated_data):
         validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
@@ -211,6 +214,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags)
         return add_ingredient(ingredients, recipe)
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         instance.tags.clear()
         instance.ingredients.clear()
