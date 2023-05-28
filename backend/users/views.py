@@ -26,7 +26,7 @@ class CustomUserViewSet(UserViewSet):
             )
     def subscriptions (self, request) :
         user = request.user
-        follows = Subscribe.objects.filter(user=user)
+        follows = User.objects.filter(following__user=user)
         page = self.paginate_queryset(follows)
         serializer = FollowSerializer(
             page, many=True,
