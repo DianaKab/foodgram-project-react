@@ -244,21 +244,21 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         ).exists()
 
     def to_representation(self, instance):
-        context = {'request': self.context.get('request')}
-        return GetRecipeSerializer(instance, context=context).data
-        # """Возвращаем прдеставление в таком же виде, как и GET-запрос."""
-        #
-        # self.fields.pop('ingredients')
-        #
-        # representation = super().to_representation(obj)
-        #
-        # representation['ingredients'] = IngredientRecipeSerializer(
-        #
-        #     IngredientRecipe.objects.filter(recipe__id=obj.id).all(), many=True
-        #
-        # ).data
-        #
-        # return representation
+        # context = {'request': self.context.get('request')}
+        # return GetRecipeSerializer(instance, context=context).data
+        """Возвращаем прдеставление в таком же виде, как и GET-запрос."""
+
+        self.fields.pop('ingredients')
+
+        representation = super().to_representation(obj)
+
+        representation['ingredients'] = IngredientRecipeSerializer(
+
+            IngredientRecipe.objects.filter(recipe__id=obj.id).all(), many=True
+
+        ).data
+
+        return representation
 
 
 class GetRecipeSerializer(serializers.ModelSerializer):
