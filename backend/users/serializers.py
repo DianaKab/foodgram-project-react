@@ -96,7 +96,7 @@ class FollowSerializer(CustomUserSerializer):
         request = self.context.get('request')
         context = {'request': request}
         recipe_limit = request.query_params.get('recipe_limit')
-        queryset = obj.recipe.all()
+        queryset = obj.recipes.all()
         if recipe_limit:
             queryset = queryset[:int(recipe_limit)]
         return RecipeSerializer(queryset, context=context, many=True).data
