@@ -86,8 +86,9 @@ class FollowSerializer(CustomUserSerializer):
     recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField(read_only=True)
 
-    class Meta(CustomUserSerializer.Meta):
-        fields = CustomUserSerializer.Meta.fields + ('recipes', 'recipes_count')
+    class Meta:
+        model = Subscribe
+        fields = ('user', 'following', 'recipes', 'recipes_count')
 
     def get_recipes(self, object):
         from app.serializers import RecipeSerializer
