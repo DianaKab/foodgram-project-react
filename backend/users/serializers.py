@@ -86,6 +86,10 @@ class FollowSerializer(CustomUserSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Subscribe
+        fields = ('user', 'following', 'recipes', 'recipes_count')
+
     def get_recipes(self, obj):
         from app.serializers import RecipeSerializer
 
@@ -99,7 +103,3 @@ class FollowSerializer(CustomUserSerializer):
 
     def get_recipes_count(self, obj):
         return obj.recipe.count()
-
-    class Meta:
-        model = Subscribe
-        fields = ('user', 'following', 'recipes', 'recipes_count')
