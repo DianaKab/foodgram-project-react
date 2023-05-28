@@ -83,22 +83,22 @@ class CustomUserSerializer(UserSerializer):
 
 class FollowSerializer(CustomUserSerializer):
     """Сериализатор для добавления/удаления подписки, просмотра подписок."""
-    recipes = serializers.SerializerMethodField(read_only=True)
-    recipes_count = serializers.SerializerMethodField(read_only=True)
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
-    def get_recipes(self, object):
+    def get_recipes(self, obj):
         from app.serializers import RecipeSerializer
 
         request = self.context.get('request')
         context = {'request': request}
         recipe_limit = request.query_params.get('recipe_limit')
-        queryset = object.recipes.all()
+        queryset = obj.recipes.all()
         if recipe_limit:
             queryset = queryset[:int(recipe_limit)]
         return RecipeSerializer(queryset, context=context, many=True).data
 
-    def get_recipes_count(self, object):
-        return object.recipes.count()
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
 
     class Meta:
         model = Subscribe
