@@ -252,8 +252,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения полной информации о рецепте."""
     tags = TagSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientRecipeSerializer(read_only=True, many=True,
-                                             source='recipe')
+    ingredients = IngredientRecipeSerializer(read_only=True, many=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
