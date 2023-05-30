@@ -109,7 +109,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         for ingredient in ingredients :
             file_data.append(f'{ingredient[0]} ({ingredient[1]}) - {ingredient[2]}\n')
-        response = HttpResponse(file_data, content_type='application/text charset=utf-8')
+        response = HttpResponse(file_data, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="shopping_car.txt"'
 
         return response
