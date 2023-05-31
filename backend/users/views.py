@@ -24,7 +24,7 @@ class CustomUserViewSet(UserViewSet):
             permission_classes=[IsAuthenticated],
             pagination_class=LimitsPagination
             )
-    def subscriptions (self, request) :
+    def subscriptions(self, request):
         user = request.user
         follows = User.objects.filter(following__user=user)
         page = self.paginate_queryset(follows)
