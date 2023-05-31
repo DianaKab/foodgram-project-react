@@ -94,10 +94,10 @@ class FollowSerializer(CustomUserSerializer):
 
         request = self.context.get('request')
         context = {'request': request}
-        recipe_limit = request.query_params.get('recipe_limit')
+        recipes_limit = request.query_params.get('recipes_limit')
         queryset = obj.recipe.all()
-        if recipe_limit:
-            queryset = queryset[:int(recipe_limit)]
+        if recipes_limit:
+            queryset = queryset[:int(recipes_limit)]
         return RecipeSerializer(queryset, context=context, many=True).data
 
     def get_recipes_count(self, obj):
