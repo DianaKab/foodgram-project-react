@@ -21,7 +21,8 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = LimitsPagination
 
     @action(detail=False,
-            permission_classes=[IsAuthenticated]
+            permission_classes=[IsAuthenticated],
+            pagination_class=LimitsPagination
             )
     def subscriptions (self, request) :
         user = request.user
